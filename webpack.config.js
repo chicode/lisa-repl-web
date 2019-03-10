@@ -22,7 +22,11 @@ module.exports = {
       },
       {
         test: /\.(sa|sc|c)ss$/,
-        use: [MiniCssExtractPlugin.loader, 'css-loader', 'sass-loader'],
+        use: [
+          process.env.NODE_ENV === 'development' ? 'style-loader' : MiniCssExtractPlugin.loader,
+          'css-loader',
+          'sass-loader',
+        ],
       },
       {
         test: /\.elm$/,
@@ -33,7 +37,7 @@ module.exports = {
       },
     ],
   },
-  plugins: [new MiniCssExtractPlugin({ filename: './css/[name].css' })],
+  plugins: [new MiniCssExtractPlugin()],
   devServer: {
     contentBase: path.join(__dirname, 'dist'),
     historyApiFallback: true,
