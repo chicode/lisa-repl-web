@@ -1,3 +1,4 @@
 node_modules
 elm-stuff
-bundle.js
+dist/bundle.js
+dist/app.css

@@ -90,13 +90,15 @@ view : Model -> Browser.Document Msg
 view model =
     { title = "Copala"
     , body =
-        [div [class "container pt-9 w-100"]
+        [div [class "py-9 w-100 text-center"]
             [ img [ src "img/copala.svg", class "mx-auto" ] []
-            , h2 [class "mt-5 mb-7"] [ text "northside's student-run play festival" ]
+            , h2 [ class "mt-5 mb-9" ] [ text "northside's student-run play festival" ]
             , timeline model.width model.now
-            , h3 [class "mt-9"] [ text "currently: plays!" ]
-            , p [] [ text "Copala is all about creativity and weirdness. Your play can can cover any topic and doesn’t have to even resemble a play -- just keep it school appropriate. The length is capped at 30 minutes, and you can make use of the lights, curten, and props." ]
-            , a [ class "d-flex button", href "asd" ] [ text "submit a play" ]
+            , h3 [ class "mt-9" ] [ text "currently: plays!" ]
+            , p [ class "w-75 mx-auto mt-3 mb-5 text-left"
+                , style "max-width" "1000px"
+            ] [ text "Copala is all about creativity and weirdness. Your play can can cover any topic and doesn’t have to even resemble a play -- just keep it school appropriate. The length should be 15-30 pages, and you can make use of the lights, curtain, and props." ]
+            , a [ class "button mx-auto", href "https://goo.gl/forms/WOlsLFdPWgRyjiFm1" ] [ text "submit a play" ]
             ]
         ]
     }

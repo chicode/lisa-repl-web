@@ -29,6 +29,16 @@ $spacers: (
 @import "node_modules/bootstrap/scss/_functions";
 @import "node_modules/bootstrap/scss/mixins/_breakpoints";
 
+.button {
+    border: 3px solid $orange;
+    font-weight: bold;
+    color: black;
+    padding: 0.5rem;
+}
+a:hover {
+    color: $orange;
+}
+
 .timeline {
     position: relative;
     margin: auto;
@@ -45,11 +55,13 @@ $spacers: (
         position: absolute;
 
         $width: 30px;
+        // not sure why this is necessary
+        $offset: 3px;
 
         &.date::before {
             content: "";
             position: absolute;
-            margin-top: $width / 2 * -1;
+            margin-top: $width / 2 * -1 - $offset;
             width: $width;
             height: $width;
             border-radius: 100%;
@@ -66,10 +78,11 @@ $spacers: (
         &.now::before {
             content: "";
             position: absolute;
-            margin-top: $height / -2;
-            width: $bar-width;
+            margin-top: $height / -2 - $offset;
+            width: $height;
             height: $height;
             background: black;
+            border-radius: 100%;
 
             margin-left: auto;
             margin-right: auto;
