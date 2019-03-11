@@ -29,6 +29,10 @@ $spacers: (
 @import "node_modules/bootstrap/scss/_functions";
 @import "node_modules/bootstrap/scss/mixins/_breakpoints";
 
+body {
+    line-height: 1.4;
+}
+
 .button {
     border: 3px solid $orange;
     font-weight: bold;
@@ -39,76 +43,103 @@ a:hover {
     color: $orange;
 }
 
-.timeline {
-    position: relative;
-    margin: auto;
-    width: 75vw;
+@include media-breakpoint-down(md) {
+    h2, h3 {
+        font-size: 23px;
+    }
+    p, button, a {
+        font-size: 21px;
+    }
+}
 
+.timeline {
+    $timeline-width: 75vw;
     $bar-width: 5px;
 
-    .timeline-bar {
-        height: $bar-width;
-        background: black;
-    }
+    position: relative;
+    margin: auto;
+    width: $timeline-width;
 
-    .timeline-section {
-        position: absolute;
+    @include media-breakpoint-down(sm) {
+        display: flex;
+        justify-content: space-between;
 
-        $width: 30px;
-        // not sure why this is necessary
-        $offset: 3px;
-
-        &.date::before {
-            content: "";
-            position: absolute;
-            margin-top: $width / 2 * -1 - $offset;
-            width: $width;
-            height: $width;
-            border-radius: 100%;
-            background: $orange;
-
-            margin-left: auto;
-            margin-right: auto;
-            left: 0;
-            right: 0;
-        }
-
-        $height: 20px;
-
-        &.now::before {
-            content: "";
-            position: absolute;
-            margin-top: $height / -2 - $offset;
-            width: $height;
-            height: $height;
-            background: black;
-            border-radius: 100%;
-
-            margin-left: auto;
-            margin-right: auto;
-            left: 0;
-            right: 0;
-        }
-
-        &.now .timeline-heading {
+        .timeline-heading {
             color: $orange;
         }
+    }
 
-        .timeline-text.bottom {
-            margin-top: $width;
+    @include media-breakpoint-down(xs) {
+        flex-direction: column;
+
+        .timeline-section {
+            margin-bottom: 1rem;
         }
-        .timeline-text.top {
-            margin-top: $width * -3;
+    }
+
+    @include media-breakpoint-up(md) {
+        .timeline-bar {
+            height: $bar-width;
+            background: black;
         }
 
-        .timeline-date {
-            font-size: 1rem;
-        }
+        .timeline-section {
+            position: absolute;
 
-        .timeline-heading, .timeline-date {
-            margin-bottom: 0;
-            font-weight: bold;
-            text-align: center;
+            $width: 30px;
+            // not sure why this is necessary
+            $offset: 3px;
+
+            &.date::before {
+                content: "";
+                position: absolute;
+                margin-top: $width / 2 * -1 - $offset;
+                width: $width;
+                height: $width;
+                border-radius: 100%;
+                background: $orange;
+
+                margin-left: auto;
+                margin-right: auto;
+                left: 0;
+                right: 0;
+            }
+
+            $height: 20px;
+
+            &.now::before {
+                content: "";
+                position: absolute;
+                margin-top: $height / -2 - $offset;
+                width: $height;
+                height: $height;
+                background: black;
+                border-radius: 100%;
+
+                margin-left: auto;
+                margin-right: auto;
+                left: 0;
+                right: 0;
+            }
+
+            .timeline-text.bottom {
+                margin-top: $width;
+                min-width: 30px;
+            }
+
+            .timeline-text.top {
+                margin-top: $width * -3;
+            }
         }
+    }
+
+    .timeline-date {
+        font-size: 1rem;
+    }
+
+    .timeline-heading, .timeline-date {
+        margin-bottom: 0;
+        font-weight: bold;
+        text-align: center;
     }
 }

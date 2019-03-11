@@ -90,13 +90,17 @@ view : Model -> Browser.Document Msg
 view model =
     { title = "Copala"
     , body =
-        [div [class "py-9 w-100 text-center"]
-            [ img [ src "img/copala.svg", class "mx-auto" ] []
-            , h2 [ class "mt-5 mb-9" ] [ text "northside's student-run play festival" ]
+        [div [class "py-6 py-md-9 w-100 text-center"]
+            [ img [ src "img/copala.svg"
+                  , class "mx-auto"
+                  , style "max-width" "1000px"
+                  , style "width" "80vw"
+                  ] []
+            , h2 [ class "mt-5 mb-5 mb-md-9 w-75 mx-auto" ] [ text "northside's student-run play festival" ]
             , timeline model.width model.now
-            , h3 [ class "mt-9" ] [ text "currently: plays!" ]
-            , p [ class "w-75 mx-auto mt-3 mb-5 text-left"
-                , style "max-width" "1000px"
+            , h3 [ class "mt-5 mt-md-9" ] [ text "currently: plays!" ]
+            , p [ class "w-75 mx-auto mt-4 mb-4 mb-md-5 text-justify"
+                , style "max-width" "600px"
             ] [ text "Copala is all about creativity and weirdness. Your play can can cover any topic and doesn’t have to even resemble a play -- just keep it school appropriate. The length should be 15-30 pages, and you can make use of the lights, curtain, and props." ]
             , a [ class "button mx-auto", href "https://goo.gl/forms/WOlsLFdPWgRyjiFm1" ] [ text "submit a play" ]
             ]
@@ -125,6 +129,10 @@ toMonth month =
     Time.Nov -> "November"
     Time.Dec -> "December"
 
+isMd : Int -> Bool
+isMd width =
+  width >= 768
+
 timeline : Int -> Int -> Html Msg
 timeline width now =
     let
@@ -141,9 +149,13 @@ timeline width now =
             (String.fromInt <| Time.toDay Time.utc truePosix)
     in
     div [class "timeline"]
-        <| [div [class "timeline-bar"] []] ++ (
-            timelineList
-            |> (::) ("now", (toFloat now))
+        <| (if isMd width then [div [class "timeline-bar"] []] else []) ++ (
+
+            (if isMd width then
+              timelineList
+              |> (::) ("now", (toFloat now))
+            else
+              timelineList)
             |> List.sortBy Tuple.second
             |> List.map
                 (\(name, posix) ->
@@ -155,7 +167,7 @@ timeline width now =
                         [ div [ class "timeline-text"
                               , class (if name == "3-5 announced" || name == "now" then "top" else "bottom")
                               ]
-                          [ p [ class "timeline-heading" ] [ text name ]
+                          [ p [ class "timeline-heading" ] [ text <| if name == "plays" && not (isMd width) then "plays due" else name ]
                           , p [ class "timeline-date" ] [ text (posixToString posix) ]
                           ]
                         ]
