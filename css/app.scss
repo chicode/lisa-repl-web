@@ -1,3 +1,26 @@
+@import url("https://fonts.googleapis.com/css?family=Karla:400,700");
+@import "./fixes.scss";
+
+$font-family-sans-serif: Karla;
+
+$orange: #FF4949;
+$colors: (
+    orange: $orange
+);
+
+$h3-font-size: 2.5rem;
+$h2-font-size: 3rem;
+$font-size-base: 1.6rem;
+
+$spacer: 1rem;
+$spacers: (
+    6: ($spacer * 5),
+    7: ($spacer * 7),
+    8: ($spacer * 9),
+    9: ($spacer * 11),
+    10: ($spacer * 13),
+);
+
 @import "node_modules/bootstrap/scss/bootstrap-grid";
 @import "node_modules/bootstrap/scss/bootstrap-reboot";
 @import "node_modules/bootstrap/scss/type";
@@ -5,3 +28,74 @@
 @import "node_modules/bootstrap/scss/_variables";
 @import "node_modules/bootstrap/scss/_functions";
 @import "node_modules/bootstrap/scss/mixins/_breakpoints";
+
+.timeline {
+    position: relative;
+    margin: auto;
+    width: 75vw;
+
+    $bar-width: 5px;
+
+    .timeline-bar {
+        height: $bar-width;
+        background: black;
+    }
+
+    .timeline-section {
+        position: absolute;
+
+        $width: 30px;
+
+        &.date::before {
+            content: "";
+            position: absolute;
+            margin-top: $width / 2 * -1;
+            width: $width;
+            height: $width;
+            border-radius: 100%;
+            background: $orange;
+
+            margin-left: auto;
+            margin-right: auto;
+            left: 0;
+            right: 0;
+        }
+
+        $height: 20px;
+
+        &.now::before {
+            content: "";
+            position: absolute;
+            margin-top: $height / -2;
+            width: $bar-width;
+            height: $height;
+            background: black;
+
+            margin-left: auto;
+            margin-right: auto;
+            left: 0;
+            right: 0;
+        }
+
+        &.now .timeline-heading {
+            color: $orange;
+        }
+
+        .timeline-text.bottom {
+            margin-top: $width;
+        }
+        .timeline-text.top {
+            margin-top: $width * -3;
+        }
+
+        .timeline-date {
+            font-size: 1rem;
+        }
+
+        .timeline-heading, .timeline-date {
+            margin-bottom: 0;
+            font-weight: bold;
+            text-align: center;
+        }
+    }
+}

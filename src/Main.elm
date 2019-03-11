@@ -4,7 +4,6 @@ import Browser
 import Browser.Dom
 import Browser.Events
 import Browser.Navigation as Nav
-import Dict
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
@@ -37,23 +36,21 @@ type alias Model =
     { key : Nav.Key
     , url : Url.Url
     , width : Int
+    , now : Int
     }
 
 
 init : () -> Url.Url -> Nav.Key -> ( Model, Cmd Msg )
 init flags url key =
-    (Model key url 0, Task.perform InitialViewport Browser.Dom.getViewport )
+    (Model key url 0 0, Task.perform identity (Task.map2 InitialData Browser.Dom.getViewport Time.now ))
 
 
 
 -- UPDATE
 
 
-type Msg
-    = LinkClicked Browser.UrlRequest
-    | UrlChanged Url.Url
-    | Resized Int Int
-    | InitialViewport Browser.Dom.Viewport
+type Msg = LinkClicked Browser.UrlRequest | UrlChanged Url.Url | Resized Int Int
+    | InitialData Browser.Dom.Viewport Time.Posix
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
@@ -72,8 +69,8 @@ update msg model =
         Resized width height ->
             ( { model | width = width }, Cmd.none )
 
-        InitialViewport viewport ->
-            ( { model | width = truncate viewport.viewport.width }, Cmd.none)
+        InitialData viewport now ->
+            ( { model | width = truncate viewport.viewport.width, now = (Time.posixToMillis now) // 1000}, Cmd.none)
 
 
 
@@ -93,23 +90,41 @@ view : Model -> Browser.Document Msg
 view model =
     { title = "Copala"
     , body =
-        [ img [ src "copala.svg" ] []
-        , h2 [] [ text "northside's student-run play festival" ]
-        , timeline model.width
-        , h3 [] [ text "currently: plays!" ]
-        , p [] [ text "Copala is all about creativity and weirdness. Your play can can cover any topic and doesn’t have to even resemble a play -- just keep it school appropriate. The length is capped at 30 minutes, and you can make use of the lights, curten, and props." ]
-        , a [ class "d-flex button", href "asd" ] [ text "submit a play" ]
+        [div [class "container pt-9 w-100"]
+            [ img [ src "img/copala.svg", class "mx-auto" ] []
+            , h2 [class "mt-5 mb-7"] [ text "northside's student-run play festival" ]
+            , timeline model.width model.now
+            , h3 [class "mt-9"] [ text "currently: plays!" ]
+            , p [] [ text "Copala is all about creativity and weirdness. Your play can can cover any topic and doesn’t have to even resemble a play -- just keep it school appropriate. The length is capped at 30 minutes, and you can make use of the lights, curten, and props." ]
+            , a [ class "d-flex button", href "asd" ] [ text "submit a play" ]
+            ]
         ]
     }
 
 
-timelineList = Dict.fromList [ ( "plays due", 1553922000 ), ( "3-5 announced", 1554267600 ), ( "tryouts", 1554699600 ), ( "Copala", 1558674000 ) ]
-timelineStart = 1551398400
-timelineEnd = 1559347200
+timelineList = [ ( "plays", 1553922000 ), ( "3-5 announced", 1554267600 ), ( "tryouts", 1554699600 ), ( "Copala", 1558674000 ) ]
+timelineStart = 1552398400
+timelineEnd = 1558694000
 timelineWidth = 0.7
 
-timeline : Int -> Html Msg
-timeline width =
+toMonth : Time.Month -> String
+toMonth month =
+  case month of
+    Time.Jan -> "January"
+    Time.Feb -> "February"
+    Time.Mar -> "March"
+    Time.Apr -> "April"
+    Time.May -> "May"
+    Time.Jun -> "June"
+    Time.Jul -> "July"
+    Time.Aug -> "August"
+    Time.Sep -> "September"
+    Time.Oct -> "October"
+    Time.Nov -> "November"
+    Time.Dec -> "December"
+
+timeline : Int -> Int -> Html Msg
+timeline width now =
     let
         posixToPercent =
             \posix -> (posix - timelineStart) / (timelineEnd - timelineStart)
@@ -117,20 +132,31 @@ timeline width =
         posixToPosition =
             posixToPercent >> (*) (width |> toFloat |> (*) timelineWidth) >> String.fromFloat >> (\s -> s ++ "px")
 
-        posixToDay =
-            truncate >> Time.millisToPosix >> Time.toDay Time.utc
+        posixToString = \posix ->
+            let truePosix = posix |> truncate |> (*) 1000 |> Time.millisToPosix
+            in
+            (toMonth <| Time.toMonth Time.utc truePosix) ++ " " ++
+            (String.fromInt <| Time.toDay Time.utc truePosix)
     in
-    div [ class "" ]
-        (timelineList
-            |> Dict.map
-                (\name posix ->
+    div [class "timeline"]
+        <| [div [class "timeline-bar"] []] ++ (
+            timelineList
+            |> (::) ("now", (toFloat now))
+            |> List.sortBy Tuple.second
+            |> List.map
+                (\(name, posix) ->
                     div
-                        [ class "position-absolute"
+                        [ class "timeline-section"
+                        , class (if name == "now" then "now" else "date")
                         , style "left" <| posixToPosition posix
                         ]
-                        [ h4 [] [ text name ]
-                        , p [] [ text (String.fromInt (posixToDay posix)) ]
+                        [ div [ class "timeline-text"
+                              , class (if name == "3-5 announced" || name == "now" then "top" else "bottom")
+                              ]
+                          [ p [ class "timeline-heading" ] [ text name ]
+                          , p [ class "timeline-date" ] [ text (posixToString posix) ]
+                          ]
                         ]
                 )
-            |> Dict.values
         )
+
