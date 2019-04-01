@@ -107,6 +107,10 @@ a:hover {
 
             $height: 20px;
 
+            &.now div {
+                display: none;
+            }
+
             &.now::before {
                 content: "";
                 position: absolute;
