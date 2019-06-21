@@ -1,10 +1,11 @@
 @import url("https://fonts.googleapis.com/css?family=Karla:400,700");
+@import url("https://fontlibrary.org/face/fantasque-sans-mono");
 
 $font-family-sans-serif: Karla;
 
-$orange: #FF4949;
+$orange: #ff4949;
 $colors: (
-    orange: $orange
+  orange: $orange
 );
 
 $h3-font-size: 2.5rem;
@@ -13,11 +14,21 @@ $font-size-base: 1.6rem;
 
 $spacer: 1rem;
 $spacers: (
-    6: ($spacer * 5),
-    7: ($spacer * 7),
-    8: ($spacer * 9),
-    9: ($spacer * 11),
-    10: ($spacer * 13),
+  6: (
+    $spacer * 5
+  ),
+  7: (
+    $spacer * 7
+  ),
+  8: (
+    $spacer * 9
+  ),
+  9: (
+    $spacer * 11
+  ),
+  10: (
+    $spacer * 13
+  )
 );
 
 @import "node_modules/bootstrap/scss/bootstrap-grid";
@@ -27,3 +38,53 @@ $spacers: (
 @import "node_modules/bootstrap/scss/_variables";
 @import "node_modules/bootstrap/scss/_functions";
 @import "node_modules/bootstrap/scss/mixins/_breakpoints";
+
+body {
+  width: 90%;
+  box-sizing: border-box;
+  padding-top: 50px;
+}
+
+.uh-oh {
+  color: red;
+}
+
+.CodeMirror {
+  border: solid black 1px;
+  width: 600px;
+  font-size: 15px;
+  font-family: Fantasque Sans Mono;
+}
+
+.row {
+  display: flex;
+  justify-content: space-around;
+}
+
+.column {
+  * {
+    margin-bottom: 40px;
+  }
+}
+
+.result-area {
+  border: 0.5px solid gray;
+  color: gray;
+  min-width: 300px;
+  .result-text {
+    margin: 10px;
+  }
+  #output {
+    border: 0.5px solid gray;
+    padding: 20px;
+    margin: 20px;
+    min-height: 100px;
+    font-family: Fantasque Sans Mono;
+  }
+}
+
+#errors {
+  color: red;
+  max-width: 350px;
+  font-family: Fantasque Sans Mono;
+}

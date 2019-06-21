@@ -1,9 +1,9 @@
-import module Main exposing (main)
+port module Main exposing (main)
 
 import Dict
 import Json.Encode as E
 import Lisa
-import Html exposing (..)
+
 
 type Msg
     = Request String
@@ -27,9 +27,6 @@ main =
         , update = update
         , subscriptions = \_ -> incoming Request
         }
-
-
-
 
 
 port incoming : (String -> msg) -> Sub msg

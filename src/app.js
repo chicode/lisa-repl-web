@@ -1,14 +1,10 @@
-import Elm from "./Main.elm";
+import { Elm } from "./Main.elm";
 import * as lisavm from "@chicode/lisa-vm";
-import * as repl from "repl";
-import { callbackify } from "util";
-import '../css/app.scss'
-import CodeMirror from 'codemirror'
+import "../css/app.scss";
+import CodeMirror from "codemirror";
+import "codemirror/lib/codemirror.css";
 
-const app = Elm.Main.init({
-  node: document.getElementById('root'),
-  windowWidth: window.innerWidth,
-})
+const app = Elm.Main.init();
 
 const processLisa = source =>
   new Promise((res, rej) => {
@@ -25,22 +21,27 @@ const processLisa = source =>
     }
   });
 
-const programScope = lisavm.initProgram();
-// programScope.parent.vars["-last"] = {
-//   type: "const",
-//   get value() {
-//     return rep.last || { type: "none" };
-//   }
-// };
-const rep = repl.start({
-  ignoreUndefined: true,
-  eval: callbackify(async (evalCmd, _context, _file) => {
-    try {
-      var program = await processLisa(evalCmd);
-    } catch (e) {
-      const err = new SyntaxError(e.msg);
-      throw e.recoverable ? new repl.Recoverable(err) : err;
+const editor = CodeMirror.fromTextArea(document.getElementById("codemirror"), {
+  extraKeys: {
+    Tab: cm => {
+      cm.replaceSelection("   ", "end");
     }
+  }
+});
+
+const output = document.getElementById("output");
+const errors = document.getElementById("errors");
+
+const programScope = lisavm.initProgram();
+
+let mark;
+
+const evalLisa = async () => {
+  errors.textContent = "";
+  if (mark) mark.clear();
+  const code = editor.getValue();
+  try {
+    var program = await processLisa(code);
     let result = lisavm.values.none;
     for (const replExpr of program) {
       switch (replExpr.type) {
@@ -54,8 +55,28 @@ const rep = repl.start({
           );
       }
     }
-    rep.last = result;
-    return result.type !== "none" ? lisavm.valueToJs(result) : undefined;
-  })
-});
+    const repr =
+      result.type === "none"
+        ? "none"
+        : JSON.stringify(lisavm.valueToJs(result));
 
+    output.textContent = repr;
+  } catch (err) {
+    console.error(err);
+    mark = editor.getDoc().markText(
+      {
+        line: err.location.startRow - 1,
+        ch: err.location.startCol - 1
+      },
+      {
+        line: err.location.endRow - 1,
+        ch: err.location.endCol - 1
+      },
+      { className: "uh-oh" }
+    );
+    output.textContent = "";
+    errors.textContent = err.msg || err.message;
+  }
+};
+
+document.getElementById("evaluate").addEventListener("click", evalLisa);
